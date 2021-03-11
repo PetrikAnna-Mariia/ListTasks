@@ -1,0 +1,145 @@
+* {
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: Pompadur;
+    src: url(https://fonts.google.com/specimen/Josefin+Sans);
+}
+
+body {
+    margin: 0;
+    max-width: 1440px;
+    width: 100%;
+    font-family: Pompadur;
+    display: flex;
+    justify-content: center;
+    color: hsl(235, 19%, 35%);
+    background-color: hsl(236, 33%, 92%);
+}
+
+#wrapper {
+    position: absolute;
+    overflow: hidden;
+    margin-top: 100px;
+    max-width: 400px;
+    width: 100%;
+}
+
+div {
+    padding: 10px;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    background-color: hsl(236, 33%, 92%, 0);
+    font-size: 12px;
+}
+
+button:hover {
+    color: hsl(235, 19%, 35%);
+}
+
+.btStyle {
+    border: 1px solid black;
+}
+
+input, textarea {
+    outline: none;
+    border: none;
+    cursor: pointer;
+    background-color: inherit;
+}
+
+.contener {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.createTodo {
+    margin-bottom: 20px;
+    margin-top: 30px;
+    background-color: hsl(0, 0%, 99%);
+    width: 100%;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.foneImg {
+    width: 100%;
+}
+
+.fone {
+    padding: 0px;
+}
+
+.name {
+    font-size: 30px;
+    color: hsl(236, 33%, 92%);
+}
+
+.left {
+    font-size: 12px;
+    text-align: center;
+}
+
+.footer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.generalBloc {
+    background-color: hsl(0, 0%, 99%);
+    border-radius: 6px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    padding: 0px;
+}
+
+.contener2 {
+    display: flex;
+    justify-content: center;
+    padding: 0px;
+    margin-top: 20px;
+    background-color: hsl(0, 0%, 99%);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
+}
+
+.spanComplete {
+    text-decoration: line-through;
+}
+
+.block {
+    padding: 0px;
+}
+
+.dark {
+    background-color: hsl(235, 21%, 11%);
+    color: hsl(234, 39%, 85%);
+}
+
+.darkForDiv {
+    background-color: hsl(235, 24%, 19%);
+    color: hsl(234, 39%, 85%);
+}
+
+.divTodo {
+    border-bottom: 1px solid hsl(236, 9%, 61%);
+}
+
+.activ {
+    background-color: hsl(126, 87%, 91%);
+}
+
+.activDark {
+    background-color: hsl(151, 26%, 20%);
+}
+
+@media (max-width: 375px) {
+    #wrapper {
+        margin-top: 100px;
+    }
+}
