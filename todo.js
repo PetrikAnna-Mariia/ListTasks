@@ -3,76 +3,40 @@ class Task{
         this.name = name;
         this.state = false;
     }
-    create(){
-        this.div = createElem(block, 'div', "divTodo");
-        this.button = createElem(this.div, "button", "btStyle");
-        this.span = createElem(this.div, "span", '', this.name);
-        this.button.addEventListener('click', this.switchState.bind(this));
-    }   
-
     switchState(){
         this.state = !this.state;
-        this.span.classList.toggle("spanComplete");    
     }                                
 }
 
 class TodoList{
     constructor(){
         this.tasks = [];
-        this.flag = true;
-        this.classAtt = "activ"
-    }
-    switchClass(){
-        if(this.classAtt == "activ") this.classAtt = "activDark";
-        else this.classAtt = "activ";
-    }
-    changeThema(){
-        this.tasks.forEach(item => {
-            if(item.div.classList.contains('activDark')){
-                item.div.classList.remove('activDark');
-                item.div.classList.add("activ");
-            }
-            else if(item.div.classList.contains('activ')){
-                item.div.classList.remove('activ');
-                item.div.classList.add("activDark");
-            }
-        });
     }
     addTask(task){
         this.tasks.push(task);
     }
-    removeCompletedTask(){
-        this.tasks = this.tasks.filter(task =>{
-            if(task.state) task.div.remove();
-            return !task.state 
+    filter(condition){
+        const result = this.tasks.filter(task => {
+            switch (condition) {
+                case "all":
+                    return task;
+                    break;
+                case "active":
+                    return task.state == false;
+                    break;
+                case "completed":
+                    return task.state == true;
+                    break;
+            }
+        })
+        return result;
+    }
+    removeTask(arr){
+        arr.forEach(item =>{
+            this.tasks = this.tasks.filter(task => task !== item)
         });
     }
-    active(){
-        this.tasks.forEach(task => {
-            if(!task.state)task.div.classList.toggle(this.classAtt);
-            if(task.state) task.div.classList.remove(this.classAtt);
-        })
-    }
-    completed(){
-        this.tasks.forEach(task => {
-            if(task.state)task.div.classList.toggle(this.classAtt);
-            if(!task.state) task.div.classList.remove(this.classAtt);
-        })
-    }
-    all(){
-        this.tasks.forEach(task => {
-            console.log(task.div)
-            if(this.flag){
-                if(!task.div.classList.contains(this.classAtt)){
-                    task.div.classList.add(this.classAtt); 
-                }
-            } 
-            if(!this.flag) task.div.classList.remove(this.classAtt); 
-        })
-        this.flag = !this.flag
-    }
 }
-
 let list = new TodoList();
 
 const buttonCreate = document.getElementById('create');
@@ -88,16 +52,51 @@ themaSwitch.addEventListener("click", changeThema);
 const div = document.createElement("div");
 const buttonClear = document.getElementById('clear');
 const active = document.getElementById("active")
-active.addEventListener("click",list.active.bind(list))
-buttonClear.addEventListener('click', list.removeCompletedTask.bind(list));
+// active.addEventListener("click",list.active.bind(list))
+buttonClear.addEventListener('click', removeCompletedTask);
 const completed =document.getElementById("completed");
-completed.addEventListener("click",list.completed.bind(list));
+// completed.addEventListener("click",list.completed.bind(list));
 const all = document.getElementById("all");
-all.addEventListener("click",list.all.bind(list));
+// all.addEventListener("click",list.all.bind(list));
+const block2 = document.querySelector(".block2");
+const tasksAndDivs = new Map();
+const filterTask = filterTasks();
+block2.addEventListener("click", filterTask);
+let classAtt = "activ";
+
+let laschoise =[];
+
+function removeCompletedTask() {
+    const result = list.filter("completed");
+    list.removeTask(result);
+    result.forEach(item => {
+        tasksAndDivs.get(item).remove();
+        tasksAndDivs.delete(item);
+    })
+}
+
+function filterTasks() {
+    let lastButton = null;
+    return function (event) {
+        if(event.target.tagName != "BUTTON") return;
+        const target = event.target;
+        tasksAndDivs.forEach( div => div.classList.remove(classAtt));
+        if(lastButton == target.id){
+            lastButton = null;
+            return;
+        }
+        const result = list.filter(target.id);
+        result.forEach(task => {
+            tasksAndDivs.get(task).classList.add(classAtt);
+            laschoise.push(tasksAndDivs.get(task));
+        });
+        lastButton = target.id;
+    }
+}
+
 
 if(size){
     fone.innerHTML = "<img src='bg-mobile-light.jpg' class='foneImg'></img>";
-    let block2 = document.querySelector(".block2");
     div.classList.add("contener2");
     div.append(block2);
     generalBloc.after(div);
@@ -133,17 +132,29 @@ function wrapperchangeThema() {
         generalBloc.classList.toggle("darkForDiv");
         createTodo.classList.toggle("darkForDiv");
         flag = !flag;
-        list.switchClass();
-        list.changeThema();
+        if(laschoise)laschoise.forEach(item => {
+            item.classList.remove(classAtt);
+        });
+        switchClass();
+        if(laschoise)laschoise.forEach(item => {
+            item.classList.add(classAtt);
+        });
     }
 }
+
+function switchClass(){
+        if(classAtt == "activ") classAtt = "activDark";
+        else classAtt = "activ";
+    }
 
 function create() {
     if(input.value.trim()=="") return;
     let task = new Task(input.value);
-    task.create();
-    list.addTask(task)
+    const div = render(task);
+    list.addTask(task);
     input.value = "";
+    tasksAndDivs.set(task, div);
+
 }
 
 function createElem(contener, elem,attribute, value) {
@@ -153,3 +164,79 @@ function createElem(contener, elem,attribute, value) {
     contener.append(element);
     return element;
 }
+function render(task){
+        const div = createElem(block, 'div', "divTodo");
+        const button = createElem(div, "button", "btStyle");
+        const span = createElem(div, "span", '', task.name);
+        const changeState = f(task, span);
+        button.addEventListener('click', changeState);
+        return div;
+        function f(task, span){ 
+            return function () {
+                task.switchState();
+                span.classList.toggle("spanComplete");  
+            }   
+        }
+}
+
+block.addEventListener('mousedown', moveTask);
+
+function moveTask(event){
+    event.preventDefault();
+    if(!event.target.closest(".divTodo")) return;
+    let target = event.target.closest(".divTodo");
+    let blockCoord =block.getBoundingClientRect();
+    selectedTask = target.cloneNode(true);
+    selectedTask.style.position = 'absolute';
+    selectedTask.style.zIndex = 100;
+    selectedTask.style.width = target.getBoundingClientRect().width + "px";
+    document.body.append(selectedTask);
+    
+    moveAt( event.pageY);
+    function moveAt( pageY) {
+        let coorsClone = selectedTask.getBoundingClientRect()
+        let top = pageY - target.getBoundingClientRect().top ;
+        let topClone = pageY - top;
+        if ( coorsClone.top < blockCoord.top) {
+            topClone = blockCoord.top;
+        } 
+        if ( coorsClone.top+ coorsClone.height > blockCoord.top + blockCoord.height) {
+            topClone = blockCoord.top + blockCoord.height - coorsClone.height;
+        }
+        
+        selectedTask.style.top = pageY - selectedTask.offsetHeight / 2 + 'px';
+        }
+    
+
+    block.addEventListener("mousemove",onMouseMove);
+    let elemBelow 
+    function onMouseMove(event) {
+        moveAt(event.pageY);
+        selectedTask.hidden = true;
+        elemBelow = document.elementFromPoint(event.clientX, event.clientY).closest(".divTodo");
+
+        selectedTask.hidden = false;
+        if (!elemBelow) return;
+
+        block.addEventListener('mousemove', onMouseMove);
+
+
+    }
+    selectedTask.addEventListener("mouseup", onMouseup)
+    function onMouseup() {
+        if(!elemBelow) return;
+        console.log(elemBelow);
+        elemBelow.after(selectedTask);
+        selectedTask.style.position = "static";
+        target.remove();
+        block.removeEventListener('mousemove', onMouseMove);
+        selectedTask.removeEventListener('mouseup', onMouseup);
+    };
+
+    selectedTask.ondragstart = function() {
+    return false;
+};
+};
+
+    
+
