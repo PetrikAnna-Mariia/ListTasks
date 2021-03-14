@@ -1,242 +1,198 @@
-class Task{
-    constructor(name) {
+class Task {
+    constructor(name, id) {
         this.name = name;
+        this.id = id;
         this.state = false;
     }
-    switchState(){
+    switchState() {
         this.state = !this.state;
-    }                                
+    }
 }
 
-class TodoList{
-    constructor(){
+class TodoList {
+    constructor() {
         this.tasks = [];
     }
-    addTask(task){
+    addTask(task) {
         this.tasks.push(task);
     }
-    filter(condition){
-        const result = this.tasks.filter(task => {
-            switch (condition) {
-                case "all":
-                    return task;
-                    break;
-                case "active":
-                    return task.state == false;
-                    break;
-                case "completed":
-                    return task.state == true;
-                    break;
-            }
-        })
-        return result;
+    removeById(idTask) {
+        this.tasks = this.tasks.filter((task) => (task = task.id != idTask));
     }
-    removeTask(arr){
-        arr.forEach(item =>{
-            this.tasks = this.tasks.filter(task => task !== item)
-        });
+    switchState(taskId) {
+        this.tasks
+            .filter((task) => task.id == taskId)
+            .map((task) => task.switchState());
+    }
+    filter(predicate) {
+        return this.tasks.filter(predicate);
+    }
+    removeAll() {
+        this.tasks = this.tasks.filter(task => !task.state);
     }
 }
-let list = new TodoList();
 
-const buttonCreate = document.getElementById('create');
-buttonCreate.addEventListener('click', create);
-const input = document.querySelector('input');
-const block = document.querySelector('.block');
-const generalBloc = document.querySelector('.generalBloc');
-const themaSwitch = document.getElementById('thema');
+let todoList = new TodoList();
+
+const {
+    wrapper,
+    counter,
+    themeSwitch,
+    filters,
+    clearCompleted,
+    active,
+    completed,
+    all,
+    createTasks,
+} = globalThis;
+
+const renderTask = render();
 const size = document.documentElement.clientWidth < 376;
-const fone = document.querySelector('.fone');
-const changeThema = wrapperchangeThema();
-themaSwitch.addEventListener("click", changeThema);
-const div = document.createElement("div");
-const buttonClear = document.getElementById('clear');
-const active = document.getElementById("active")
-// active.addEventListener("click",list.active.bind(list))
-buttonClear.addEventListener('click', removeCompletedTask);
-const completed =document.getElementById("completed");
-// completed.addEventListener("click",list.completed.bind(list));
-const all = document.getElementById("all");
-// all.addEventListener("click",list.all.bind(list));
-const block2 = document.querySelector(".block2");
-const tasksAndDivs = new Map();
-const filterTask = filterTasks();
-block2.addEventListener("click", filterTask);
-let classAtt = "activ";
+const blockTodo = document.querySelector(".todo-list");
 
-let laschoise =[];
+blockTodo.addEventListener("click", completeTask);
+blockTodo.addEventListener("click", removeLi);
+createTasks.addEventListener("click", createTask);
+filters.addEventListener("click", onFilter);
+clearCompleted.addEventListener("click", clearAllCompleted);
+themeSwitch.addEventListener("click", changeTheme);
 
-function removeCompletedTask() {
-    const result = list.filter("completed");
-    list.removeTask(result);
-    result.forEach(item => {
-        tasksAndDivs.get(item).remove();
-        tasksAndDivs.delete(item);
-    })
-}
+let lastButton = all;
 
-function filterTasks() {
-    let lastButton = null;
-    return function (event) {
-        if(event.target.tagName != "BUTTON") return;
-        const target = event.target;
-        tasksAndDivs.forEach( div => div.classList.remove(classAtt));
-        if(lastButton == target.id){
-            lastButton = null;
-            return;
-        }
-        const result = list.filter(target.id);
-        result.forEach(task => {
-            tasksAndDivs.get(task).classList.add(classAtt);
-            laschoise.push(tasksAndDivs.get(task));
-        });
-        lastButton = target.id;
-    }
-}
-
+mapFilter = new Map();
+mapFilter.set("active", (task) => !task.state);
+mapFilter.set("completed", (task) => task.state);
 
 if(size){
-    fone.innerHTML = "<img src='bg-mobile-light.jpg' class='foneImg'></img>";
-    div.classList.add("contener2");
-    div.append(block2);
-    generalBloc.after(div);
+    let listBlock = document.querySelector(".list-block");
+    listBlock.after(filters);
+    filters.classList.add("mobile-filters")
 }
 
-
-
-function wrapperchangeThema() {
-    let flag = true;
-    const createTodo = document.querySelector('.createTodo')
-    return function () {
-        if(flag){
-            themaSwitch.innerHTML = "<img src='icon-sun.svg' >" 
-            if(size) {
-                fone.innerHTML = "<img src='bg-mobile-dark.jpg' class='foneImg'></img>";
-                
-            } 
-            else{
-                fone.innerHTML = "<img src='bg-desktop-dark.jpg' class='foneImg'></img>";
-            }
-        }
-        else{
-            themaSwitch.innerHTML = "<img src='icon-moon.svg' >"
-            if(size) {
-                fone.innerHTML = "<img src='bg-mobile-light.jpg' class='foneImg'></img>";
-            } 
-            else{
-                fone.innerHTML = "<img src='bg-desktop-light.jpg' class='foneImg'></img>";
-            }
-        }
-        document.body.classList.toggle('dark');
-        div.classList.toggle("darkForDiv");
-        generalBloc.classList.toggle("darkForDiv");
-        createTodo.classList.toggle("darkForDiv");
-        flag = !flag;
-        if(laschoise)laschoise.forEach(item => {
-            item.classList.remove(classAtt);
-        });
-        switchClass();
-        if(laschoise)laschoise.forEach(item => {
-            item.classList.add(classAtt);
-        });
-    }
+function changeTheme() {
+    document.body.classList.toggle("dark-theme");
 }
 
-function switchClass(){
-        if(classAtt == "activ") classAtt = "activDark";
-        else classAtt = "activ";
-    }
+function removeLi(event) {
+    if (event.target.tagName != "IMG") return;
+    const li = event.target.closest("li");
+    const id = li.id;
+    todoList.removeById(id);
+    li.remove();
+    counter.innerHTML = getItemsLeft();
+}
 
-function create() {
-    if(input.value.trim()=="") return;
-    let task = new Task(input.value);
-    const div = render(task);
-    list.addTask(task);
+function getItemsLeft() {
+    return "" + todoList.filter(mapFilter.get('active')).length;
+}
+
+function clearAllCompleted() {
+    const result = todoList.filter(mapFilter.get("completed"));
+    todoList.removeAll(result);
+    result.forEach((task) => {
+        document.getElementById(task.id).remove();
+    });
+    counter.innerHTML = getItemsLeft();
+}
+
+function onFilter(event) {
+    if (event.target.tagName != "A") return;
+    const filterButton = event.target;
+    lastButton.classList.remove("pressButton");
+    filterButton.classList.add("pressButton");
+    clearHighlighted();
+    if (filterButton == all){
+        lastButton = filterButton;
+        return;
+    }
+    highlight(filterButton.id);
+    lastButton = filterButton;
+}
+
+function clearHighlighted() {
+    let arrLi = Array.from(blockTodo.querySelectorAll("li"));
+    arrLi.forEach((li) => li.classList.remove("active"));
+}
+
+function highlight(filterId) {
+    const result = todoList.filter(mapFilter.get(filterId));
+    result.forEach((task) => {
+        document.getElementById(task.id).classList.add("active");
+    });
+}
+
+function createTask() {
+    const input = document.querySelector("input[type='text']");
+    if (input.value.trim() == "") return;
+    let task = new Task(input.value, new Date().getTime());
+    todoList.addTask(task);
+    renderTask(task);
     input.value = "";
-    tasksAndDivs.set(task, div);
-
+    counter.innerHTML = getItemsLeft();
 }
 
-function createElem(contener, elem,attribute, value) {
-    let element = document.createElement(elem);
-    if(attribute)element.setAttribute("class", attribute);
-    if(value) element.innerHTML = value;
-    contener.append(element);
-    return element;
-}
-function render(task){
-        const div = createElem(block, 'div', "divTodo");
-        const button = createElem(div, "button", "btStyle");
-        const span = createElem(div, "span", '', task.name);
-        const changeState = f(task, span);
-        button.addEventListener('click', changeState);
-        return div;
-        function f(task, span){ 
-            return function () {
-                task.switchState();
-                span.classList.toggle("spanComplete");  
-            }   
-        }
-}
-
-block.addEventListener('mousedown', moveTask);
-
-function moveTask(event){
-    event.preventDefault();
-    if(!event.target.closest(".divTodo")) return;
-    let target = event.target.closest(".divTodo");
-    let blockCoord =block.getBoundingClientRect();
-    selectedTask = target.cloneNode(true);
-    selectedTask.style.position = 'absolute';
-    selectedTask.style.zIndex = 100;
-    selectedTask.style.width = target.getBoundingClientRect().width + "px";
-    document.body.append(selectedTask);
-    
-    moveAt( event.pageY);
-    function moveAt( pageY) {
-        let coorsClone = selectedTask.getBoundingClientRect()
-        let top = pageY - target.getBoundingClientRect().top ;
-        let topClone = pageY - top;
-        if ( coorsClone.top < blockCoord.top) {
-            topClone = blockCoord.top;
-        } 
-        if ( coorsClone.top+ coorsClone.height > blockCoord.top + blockCoord.height) {
-            topClone = blockCoord.top + blockCoord.height - coorsClone.height;
-        }
-        
-        selectedTask.style.top = pageY - selectedTask.offsetHeight / 2 + 'px';
-        }
-    
-
-    block.addEventListener("mousemove",onMouseMove);
-    let elemBelow 
-    function onMouseMove(event) {
-        moveAt(event.pageY);
-        selectedTask.hidden = true;
-        elemBelow = document.elementFromPoint(event.clientX, event.clientY).closest(".divTodo");
-
-        selectedTask.hidden = false;
-        if (!elemBelow) return;
-
-        block.addEventListener('mousemove', onMouseMove);
-
-
-    }
-    selectedTask.addEventListener("mouseup", onMouseup)
-    function onMouseup() {
-        if(!elemBelow) return;
-        console.log(elemBelow);
-        elemBelow.after(selectedTask);
-        selectedTask.style.position = "static";
-        target.remove();
-        block.removeEventListener('mousemove', onMouseMove);
-        selectedTask.removeEventListener('mouseup', onMouseup);
+function render() {
+    let counter = 0;
+    return function (task) {
+        const li = document.createElement("li");
+        li.innerHTML = `<input type="checkbox" id=${"label-" + counter}>
+                        <label for=${"label-" + counter}>${task.name}</label>
+                        <a href="#"><img src="icon-cross.svg" alt="check" hidden></a>`;
+        let button = li.querySelector("A");
+        if (size) button.hidden = false;
+        blockTodo.append(li);
+        li.id = task.id;
+        counter++;
+        clearHighlighted();
+        if (lastButton != all) highlight(lastButton.id);
     };
+}
 
-    selectedTask.ondragstart = function() {
+function completeTask(event) {
+    if (event.target.tagName != "LABEL") return;
+    let li = event.target.closest("li");
+    let id = li.id;
+    todoList.switchState(id);
+    li.classList.toggle("completed");
+    let button = li.querySelector("img");
+    if (!size) button.hidden = !button.hidden;
+    clearHighlighted();
+    if (lastButton != all) highlight(lastButton.id);
+    counter.innerHTML = getItemsLeft();
+}
+
+const app = document.querySelector(".todo-app")
+app.addEventListener("mousedown", onMousedown);
+
+function onMousedown(event) {
+    if(event.target.tagName == "INPUT" || event.target.tagName == "LABEL" || event.target.tagName == "A") return;
+    let shiftX = event.clientX - app.getBoundingClientRect().left;
+    let shiftY = event.clientY - app.getBoundingClientRect().top;
+
+    app.style.position = "absolute";
+    app.style.zIndex = 1000;
+    document.body.append(app);
+
+    moveAt(event.pageX, event.pageY);
+
+    function moveAt(pageX, pageY) {
+        app.style.left = pageX - shiftX + "px";
+        app.style.top = pageY - shiftY + "px";
+    }
+
+    function onMouseMove(event) {
+        moveAt(event.pageX, event.pageY);
+    }
+
+    document.addEventListener("mousemove", onMouseMove);
+
+    app.addEventListener("mouseup", onMoseup);
+    function onMoseup() {
+        document.removeEventListener("mousemove", onMouseMove);
+        app.removeEventListener("mouseup", onMoseup);
+    }
+};
+
+app.ondragstart = function () {
     return false;
 };
-};
-
-    
-

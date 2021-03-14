@@ -1,0 +1,253 @@
+* {
+    box-sizing: border-box;
+}
+
+#wrapper {
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    background-color: hsl(0, 0%, 98%);
+}
+
+.todo-section {
+    position: relative;
+    padding-top: 50px;
+}
+
+.todo-section:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 266px;
+    background-image: url(bg-desktop-light.jpg);
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-size: cover;
+}
+
+.todo-app {
+    position: relative;
+    max-width: 400px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.todo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.theme-switch {
+    display: block;
+    width: 30px;
+}
+
+.theme-switch img {
+    display: block;
+    width: 100%;
+}
+
+.theme-switch :last-child {
+    display: none;
+}
+
+.theme-switch :first-child {
+    display: block;
+}
+
+h1 {
+    text-transform: uppercase;
+    font-size: 40px;
+    color: white;
+    font-weight: 700;
+    letter-spacing: 10px;
+}
+
+.add-form {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: white;
+    border-radius: 6px;
+    margin-bottom: 30px;
+}
+
+input[type="submit"] {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid gray;
+    margin-right: 15px;
+    font-size: 0;
+    background-color: white;
+    transition: background-color .3s linear;
+}
+
+input[type="submit"]:hover {
+    background-image: linear-gradient(45deg, hsl(192, 100%, 67%), hsl(280, 87%, 65%));
+}
+
+input[type="text"] {
+    color: hsl(235, 19%, 35%);
+}
+
+.add-field {
+    width: calc(100% - 30px);
+    border: none;
+}
+
+.todo-list {
+    background-color: white;
+    transition: display .3s linear;
+}
+
+.todo-list li {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid gray;
+}
+
+.todo-list label {
+    color: hsl(235, 19%, 35%);
+    position: relative;
+    width: calc(100% - 30px);
+    height: 20px;
+    padding-left: 40px;
+    transition: color .3s linear;
+    cursor: pointer;
+}
+
+.todo-list label:before {
+    content: '✔';
+    background-color: white;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid gray;
+    color: white;
+    background-size: 100%;
+    background-position: 50% 50%;
+    transition: border-color .3s linear;
+}
+
+.todo-list label:hover {
+    color: green;
+}
+
+.todo-list label:hover:before {
+    border-color: hsl(192, 93%, 54%);
+}
+
+.list-block input[type="checkbox"] {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+}
+
+.list-block {
+    box-shadow: 0 0 20px gray;
+    border-radius: 6px;
+    margin-bottom: 30px;
+}
+
+.todo-list input[type="checkbox"]:checked+label:before {
+    background-image: linear-gradient(45deg, hsl(192, 100%, 67%), hsl(280, 87%, 65%));
+}
+
+.footer {
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 15px;
+    color: hsl(235, 19%, 35%);
+}
+
+.list-button {
+    display: flex;
+    justify-content: space-between;
+}
+
+.list-button li {
+    margin-left: 10px;
+    background-color: white;
+}
+
+.completed {
+    text-decoration: line-through;
+    color: hsl(233, 11%, 84%);
+}
+
+a {
+    text-decoration: none;
+    cursor: pointer;
+    transition: color .3s linear;
+}
+
+a:hover {
+    color: blue;
+}
+
+.subscribe {
+    text-align: center;
+    color: hsl(236, 9%, 61%);
+}
+
+.filter {
+    background-color: hsl(236, 33%, 92%);
+    /* color: hsl(233, 11%, 84%);
+    color: hsl(236, 9%, 61%);
+    color: hsl(235, 19%, 35%); */
+    color: hsl(235, 21%, 11%);
+    color: hsl(235, 24%, 19%);
+    color: hsl(234, 39%, 85%);
+    color: hsl(236, 33%, 92%);
+    color: hsl(234, 11%, 52%);
+    color: hsl(233, 14%, 35%);
+    color: hsl(237, 14%, 26%);
+}
+
+.active {
+    background-color: rgb(255, 244, 251);
+    color: rgb(1, 80, 73);
+}
+
+.dark-theme {
+    background-color: hsl(235, 21%, 11%);
+    color: hsl(234, 39%, 85%);
+}
+
+.dark-theme .todo-section:before {
+    background-image: url(bg-desktop-dark.jpg);
+}
+
+.dark-theme .theme-switch :last-child {
+    display: block;
+}
+
+.dark-theme .theme-switch :first-child {
+    display: none;
+}
+
+.pressButton {
+    color: rgb(25, 54, 187);
+    font-weight:700;
+}
+
+.mobile-filters {
+    margin-bottom: 30px;
+    box-shadow: 0 0 20px gray;
+    border-radius: 6px;
+    padding: 15px;
+}

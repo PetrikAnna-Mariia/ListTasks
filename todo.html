@@ -1,44 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="Pompadur" href="https://fonts.google.com/specimen/Josefin+Sans" as="font">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="todoMain.css">
-    <link rel="stylesheet" href="light.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <title>Document</title>
+    <!-- displays site properly based on user's device -->
+
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="stylesheet" href="./reset.css">
+    <link rel="stylesheet" href="./main.css">
+    <title>Practice #2 | Todo app</title>
+
 </head>
-<body >
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&display=swap');
-    </style>
-    <div class="fone"><img src="bg-desktop-light.jpg" class="foneImg"></div>
+
+<body>
     <div id="wrapper">
-        
-        <div class="contener ">
-            <span class="name">TODO</span>
-            <button id="thema"><img src="icon-moon.svg" ></button>
-        </div>
-        <div class="createTodo ">
-            <button class="btStyle" id="create"></button>
-            <input type="textarea" >
-        </div>
-        <div class="generalBloc ">
-            <div class="block"></div>
-            <div class="contener">
-                <div class="left">items left</div>
-                <div class="block2">
-                    <button id="all">all</button>
-                    <button id="active">Active</button>
-                    <button id="completed">Completed</button>
+        <main id="main">
+            <section class="todo-section">
+                <div class="todo-app">
+                    <div class="todo-header">
+                        <h1>todo</h1>
+                        <a href="#" class="theme-switch" id="themeSwitch">
+                            <img src="icon-moon.svg" alt="description" class="moon">
+                            <img src="icon-sun.svg" alt="description" class="sun">
+                        </a>
+                    </div>
+                    <form action="#" class="add-form">
+                        <input type="submit" id='createTasks'>
+                        <input type="text" class="add-field" placeholder="Create a new todo...">
+                    </form>
+                    <div class="list-block">
+                        <ul class="todo-list">
+                        </ul>
+                        <div class="footer" >
+                            <span id="counter"></span>
+                            <p>items left</p>
+                            <ul class="list-button" id="filters">
+                                <li><a href="#" id="all">All</a></li>
+                                <li><a href="#" id="active">Active</a></li>
+                                <li><a href="#" id="completed">Completed</a></li>
+                            </ul>
+                            <a href="#" id="clearCompleted">Clear Completed</a>
+                        </div>
+                    </div>
+                    <div class="subscribe">
+                        <p>Drag and drop to reorder list</p>
+                    </div>
                 </div>
-                <button id="clear">Clear Complated</button>
-            </div>
-        </div>
-        <div class="footer"><span>Drog and drop to reorder list</span></div>
+            </section>
+        </main>
+        
     </div>
     <script src="todo.js"></script>
 </body>
+
 </html>
