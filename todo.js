@@ -30,6 +30,7 @@ class TodoList {
 }
 
 const {
+    tasksList,
     wrapper,
     counter,
     all,
@@ -40,12 +41,10 @@ const {
 } = globalThis;
 
 let todoList = new TodoList();
-// todoList.tasks = JSON.parse(localStorage.getItem("tasks"));  
+// todoList.tasks = JSON.parse(localStorage.getItem("tasks"));
 
 // todoList.tasks.forEach(task => render(task));
 // setCounterTask();
-
-
 
 const renderTask = render();
 const size = document.documentElement.clientWidth < 376;
@@ -104,7 +103,7 @@ function highlight(filterId) {
 if (size) {
     let listBlock = document.querySelector(".list-block");
     listBlock.after(filters);
-    wrapper.classList.add("mobile")
+    wrapper.classList.add("mobile");
     filters.classList.add("mobile-filters");
 }
 
@@ -118,7 +117,7 @@ function removeTask(event) {
 }
 
 function getItemsLeft() {
-    return  todoList.tasks.filter((task) => !task.state).length;
+    return todoList.tasks.filter((task) => !task.state).length;
 }
 
 function clearAllCompleted() {
@@ -142,7 +141,7 @@ function createTask() {
     // localStorage.setItem("tasks", JSON.stringify(todoList.tasks));
 }
 
-function setCounterTask(){
+function setCounterTask() {
     getItemsLeft()
         ? (counter.innerHTML = getItemsLeft() + " items left")
         : (counter.innerHTML = "all items have completed");
@@ -180,44 +179,64 @@ function completeTask(event) {
     setCounterTask();
 }
 
-const app = document.querySelector(".todo-app");
-app.addEventListener("mousedown", onMousedown);
+tasksList.addEventListener("mousedown", onMousedown);
+
 
 function onMousedown(event) {
-    if (
-        event.target.tagName == "INPUT" ||
-        event.target.tagName == "LABEL" ||
-        event.target.tagName == "A" ||
-        event.target.tagName == "IMG"
-    )
-        return;
-    let shiftX = event.clientX - app.getBoundingClientRect().left;
-    let shiftY = event.clientY - app.getBoundingClientRect().top;
+    if (!event.target.closest("#tasksList")) return;
+    let li = event.target.closest("li");
+    let liClone = li.cloneNode(true);
 
-    app.style.position = "absolute";
-    app.style.zIndex = 1000;
-    document.body.append(app);
+    liClone.style.width = li.getBoundingClientRect().width + "px";
+    liClone.style.backgroundColor = "white";
+    let shiftY = event.clientY - li.offsetTop;
 
-    moveAt(event.pageX, event.pageY);
+    liClone.style.position = "absolute";
+    liClone.style.zIndex = 1000;
+    tasksList.append(liClone);
+    liClone.style.top = li.offsetTop + "px";
 
-    function moveAt(pageX, pageY) {
-        app.style.left = pageX - shiftX + "px";
-        app.style.top = pageY - shiftY + "px";
+
+    moveAt(event.pageY);
+    function moveAt(pageY) {
+        let top = pageY - shiftY;
+        if (top < tasksList.offsetTop) top = tasksList.offsetTop;
+        if (
+            top >
+            tasksList.offsetTop + tasksList.clientHeight - li.clientHeight
+        )
+            top = tasksList.offsetTop + tasksList.clientHeight - li.clientHeight;
+        liClone.style.top = top + "px";
     }
-
+    
+    let elemBelow;
     function onMouseMove(event) {
-        moveAt(event.pageX, event.pageY);
+        moveAt(event.pageY);
+        liClone.style.display = "none";
+        elemBelow = document.elementFromPoint(event.clientX, event.clientY).closest("li");
+        liClone.style.display = "block";
+        if (!elemBelow) return;
     }
 
     document.addEventListener("mousemove", onMouseMove);
 
-    app.addEventListener("mouseup", onMoseup);
+    liClone.addEventListener("mouseup", onMoseup);
     function onMoseup() {
         document.removeEventListener("mousemove", onMouseMove);
-        app.removeEventListener("mouseup", onMoseup);
+        let correlationPasteLi = Math.floor(
+            (elemBelow.offsetTop + elemBelow.clientHeight - event.clientY) / 2
+        );
+        correlationPasteLi = Math.abs(correlationPasteLi);
+        
+        if (correlationPasteLi > elemBelow.clientHeight/2) elemBelow.before(li);
+        if (correlationPasteLi < elemBelow.clientHeight / 2) elemBelow.after(li);
+            liClone.removeEventListener("mouseup", onMoseup);
+            liClone.remove();
     }
 }
+// event click on todo-list doesn`t work here. I understand why. But I don`t know how to fix this problem. 
+// I tryde to  call functions completeTask and removeTask inside onMousedown and after did return. But it didn`t work correct.
 
-app.ondragstart = function () {
+tasksList.ondragstart = function () {
     return false;
 };

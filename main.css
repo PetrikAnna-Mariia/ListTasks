@@ -158,11 +158,11 @@ ul {
 }
 
 .todo-list label:hover {
-    color: rgb(60, 0, 128);
+    color: rgb(140, 61, 231);
 }
 
 .todo-list label:hover:before {
-    border-color: rgb(60, 0, 128);
+    border-color: rgb(140, 61, 231);
 }
 
 .list-block input[type="checkbox"] {
@@ -223,28 +223,17 @@ a:hover {
     font-size: small;
 }
 
-.filter {
-    background-color: hsl(236, 33%, 92%);
-    /* color: hsl(233, 11%, 84%);
-    color: hsl(236, 9%, 61%);
-    color: hsl(235, 19%, 35%); */
-    color: hsl(235, 21%, 11%);
-    color: hsl(235, 24%, 19%);
-    color: hsl(234, 39%, 85%);
-    color: hsl(236, 33%, 92%);
-    color: hsl(234, 11%, 52%);
-    color: hsl(233, 14%, 35%);
-    color: hsl(237, 14%, 26%);
-}
-
 label.completed {
     color: hsl(240, 15%, 46%);
     text-decoration: line-through;
 }
 
 .active {
-    background-color: rgb(255, 244, 251);
-    color: rgb(1, 80, 73);
+    background-color: rgb(246, 242, 255);
+}
+
+.active label {
+    color: rgb(98, 71, 252);
 }
 
 .dark-theme {
@@ -291,7 +280,19 @@ label.completed {
 }
 
 .dark-theme .active {
-    background-color: hsl(234, 43%, 21%);
+    background-color: hsl(276, 51%, 26%);
+}
+
+.dark-theme .active label {
+    color: rgb(98, 71, 252);
+}
+
+.dark-theme .todo-list label:hover {
+    color: rgb(140, 61, 231);
+}
+
+.dark-theme .todo-list label:hover:before {
+    border-color: rgb(140, 61, 231);
 }
 
 .dark-theme .todo-list label {
