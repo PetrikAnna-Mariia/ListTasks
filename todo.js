@@ -24,111 +24,132 @@ class TodoList {
             .filter((task) => task.id == taskId)
             .map((task) => task.switchState());
     }
-    filter(predicate) {
-        return this.tasks.filter(predicate);
-    }
-    removeAll() {
-        this.tasks = this.tasks.filter(task => !task.state);
+    removeAllCompleted() {
+        this.tasks = this.tasks.filter((task) => !task.state);
     }
 }
-
-let todoList = new TodoList();
 
 const {
     wrapper,
     counter,
+    all,
     themeSwitch,
     filters,
     clearCompleted,
-    active,
-    completed,
-    all,
     createTasks,
 } = globalThis;
+
+let todoList = new TodoList();
+// todoList.tasks = JSON.parse(localStorage.getItem("tasks"));  
+
+// todoList.tasks.forEach(task => render(task));
+// setCounterTask();
+
+
 
 const renderTask = render();
 const size = document.documentElement.clientWidth < 376;
 const blockTodo = document.querySelector(".todo-list");
 
+let highlightButton = wrapperHighlightButton();
+
 blockTodo.addEventListener("click", completeTask);
-blockTodo.addEventListener("click", removeLi);
+blockTodo.addEventListener("click", removeTask);
 createTasks.addEventListener("click", createTask);
 filters.addEventListener("click", onFilter);
+filters.addEventListener("click", highlightButton);
 clearCompleted.addEventListener("click", clearAllCompleted);
 themeSwitch.addEventListener("click", changeTheme);
 
-let lastButton = all;
-
-mapFilter = new Map();
-mapFilter.set("active", (task) => !task.state);
-mapFilter.set("completed", (task) => task.state);
-
-if(size){
-    let listBlock = document.querySelector(".list-block");
-    listBlock.after(filters);
-    filters.classList.add("mobile-filters")
-}
-
 function changeTheme() {
     document.body.classList.toggle("dark-theme");
+    console.log(document.body);
 }
 
-function removeLi(event) {
-    if (event.target.tagName != "IMG") return;
-    const li = event.target.closest("li");
-    const id = li.id;
-    todoList.removeById(id);
-    li.remove();
-    counter.innerHTML = getItemsLeft();
-}
-
-function getItemsLeft() {
-    return "" + todoList.filter(mapFilter.get('active')).length;
-}
-
-function clearAllCompleted() {
-    const result = todoList.filter(mapFilter.get("completed"));
-    todoList.removeAll(result);
-    result.forEach((task) => {
-        document.getElementById(task.id).remove();
-    });
-    counter.innerHTML = getItemsLeft();
+function wrapperHighlightButton() {
+    let lastButton = all;
+    return function (event) {
+        if (event.target.tagName != "A") return;
+        if (event.target == lastButton) return;
+        event.target.classList.add("pressButton");
+        lastButton.classList.remove("pressButton");
+        lastButton = event.target;
+    };
 }
 
 function onFilter(event) {
     if (event.target.tagName != "A") return;
-    const filterButton = event.target;
-    lastButton.classList.remove("pressButton");
-    filterButton.classList.add("pressButton");
-    clearHighlighted();
-    if (filterButton == all){
-        lastButton = filterButton;
-        return;
-    }
-    highlight(filterButton.id);
-    lastButton = filterButton;
+    currentFilterId = event.target.id;
+    highlight(currentFilterId);
 }
 
-function clearHighlighted() {
-    let arrLi = Array.from(blockTodo.querySelectorAll("li"));
-    arrLi.forEach((li) => li.classList.remove("active"));
-}
+let currentFilterId = "all";
+mapFilter = new Map();
+mapFilter.set("all", () => false);
+mapFilter.set("active", (task) => !task.state);
+mapFilter.set("completed", (task) => task.state);
 
 function highlight(filterId) {
-    const result = todoList.filter(mapFilter.get(filterId));
-    result.forEach((task) => {
-        document.getElementById(task.id).classList.add("active");
+    let shouldBeHighlighted = mapFilter.get(filterId);
+    todoList.tasks.forEach((task) => {
+        let li = document.getElementById(task.id);
+        if (shouldBeHighlighted(task)) {
+            li.classList.add("active");
+        } else {
+            li.classList.remove("active");
+        }
     });
+}
+
+if (size) {
+    let listBlock = document.querySelector(".list-block");
+    listBlock.after(filters);
+    wrapper.classList.add("mobile")
+    filters.classList.add("mobile-filters");
+}
+
+function removeTask(event) {
+    if (event.target.tagName != "IMG") return;
+    const li = event.target.closest("li");
+    todoList.removeById(li.id);
+    li.remove();
+    setCounterTask();
+    // localStorage.setItem("tasks", JSON.stringify(todoList.tasks));
+}
+
+function getItemsLeft() {
+    return  todoList.tasks.filter((task) => !task.state).length;
+}
+
+function clearAllCompleted() {
+    const result = todoList.tasks.filter((task) => task.state);
+    todoList.removeAllCompleted(result);
+    result.forEach((task) => {
+        document.getElementById(task.id).remove();
+    });
+    setCounterTask();
+    // localStorage.setItem("tasks", JSON.stringify(todoList.tasks));
 }
 
 function createTask() {
     const input = document.querySelector("input[type='text']");
     if (input.value.trim() == "") return;
-    let task = new Task(input.value, new Date().getTime());
+    let task = new Task(input.value, generateId());
     todoList.addTask(task);
     renderTask(task);
     input.value = "";
-    counter.innerHTML = getItemsLeft();
+    setCounterTask();
+    // localStorage.setItem("tasks", JSON.stringify(todoList.tasks));
+}
+
+function setCounterTask(){
+    getItemsLeft()
+        ? (counter.innerHTML = getItemsLeft() + " items left")
+        : (counter.innerHTML = "all items have completed");
+}
+
+function generateId() {
+    return Math.random().toString(16).slice(4);
 }
 
 function render() {
@@ -138,13 +159,12 @@ function render() {
         li.innerHTML = `<input type="checkbox" id=${"label-" + counter}>
                         <label for=${"label-" + counter}>${task.name}</label>
                         <a href="#"><img src="icon-cross.svg" alt="check" hidden></a>`;
-        let button = li.querySelector("A");
+        let button = li.querySelector("img");
         if (size) button.hidden = false;
         blockTodo.append(li);
         li.id = task.id;
         counter++;
-        clearHighlighted();
-        if (lastButton != all) highlight(lastButton.id);
+        highlight(currentFilterId);
     };
 }
 
@@ -153,19 +173,24 @@ function completeTask(event) {
     let li = event.target.closest("li");
     let id = li.id;
     todoList.switchState(id);
-    li.classList.toggle("completed");
+    event.target.classList.toggle("completed");
     let button = li.querySelector("img");
     if (!size) button.hidden = !button.hidden;
-    clearHighlighted();
-    if (lastButton != all) highlight(lastButton.id);
-    counter.innerHTML = getItemsLeft();
+    highlight(currentFilterId);
+    setCounterTask();
 }
 
-const app = document.querySelector(".todo-app")
+const app = document.querySelector(".todo-app");
 app.addEventListener("mousedown", onMousedown);
 
 function onMousedown(event) {
-    if(event.target.tagName == "INPUT" || event.target.tagName == "LABEL" || event.target.tagName == "A") return;
+    if (
+        event.target.tagName == "INPUT" ||
+        event.target.tagName == "LABEL" ||
+        event.target.tagName == "A" ||
+        event.target.tagName == "IMG"
+    )
+        return;
     let shiftX = event.clientX - app.getBoundingClientRect().left;
     let shiftY = event.clientY - app.getBoundingClientRect().top;
 
@@ -191,7 +216,7 @@ function onMousedown(event) {
         document.removeEventListener("mousemove", onMouseMove);
         app.removeEventListener("mouseup", onMoseup);
     }
-};
+}
 
 app.ondragstart = function () {
     return false;

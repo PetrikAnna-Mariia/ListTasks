@@ -2,11 +2,21 @@
     box-sizing: border-box;
 }
 
+@font-face {
+    font-family: "Josefin Sans";
+    src: url(https://fonts.google.com/specimen/Josefin+Sans);
+    font-weight: 400, 700;
+}
+
+body {
+    background-color: hsl(0, 0%, 98%);
+    font-family: "Josefin Sans";
+}
+
 #wrapper {
     position: relative;
     overflow: hidden;
     min-height: 100vh;
-    background-color: hsl(0, 0%, 98%);
 }
 
 .todo-section {
@@ -93,6 +103,11 @@ input[type="submit"]:hover {
 
 input[type="text"] {
     color: hsl(235, 19%, 35%);
+    font-family: 'Josefin Sans', sans-serif;
+}
+
+ul {
+    border-radius: 6px;
 }
 
 .add-field {
@@ -102,7 +117,7 @@ input[type="text"] {
 
 .todo-list {
     background-color: white;
-    transition: display .3s linear;
+    border-radius: 6px;
 }
 
 .todo-list li {
@@ -143,11 +158,11 @@ input[type="text"] {
 }
 
 .todo-list label:hover {
-    color: green;
+    color: rgb(60, 0, 128);
 }
 
 .todo-list label:hover:before {
-    border-color: hsl(192, 93%, 54%);
+    border-color: rgb(60, 0, 128);
 }
 
 .list-block input[type="checkbox"] {
@@ -158,8 +173,8 @@ input[type="text"] {
 
 .list-block {
     box-shadow: 0 0 20px gray;
-    border-radius: 6px;
     margin-bottom: 30px;
+    border-radius: 6px;
 }
 
 .todo-list input[type="checkbox"]:checked+label:before {
@@ -172,6 +187,8 @@ input[type="text"] {
     justify-content: space-between;
     padding: 20px 15px;
     color: hsl(235, 19%, 35%);
+    font-size: 11px;
+    border-radius: 6px;
 }
 
 .list-button {
@@ -184,24 +201,26 @@ input[type="text"] {
     background-color: white;
 }
 
-.completed {
-    text-decoration: line-through;
-    color: hsl(233, 11%, 84%);
-}
-
 a {
     text-decoration: none;
     cursor: pointer;
     transition: color .3s linear;
+    font-size: small;
+    color: hsl(231, 3%, 43%);
+    font-weight: 400;
+    transition: all .3s linear;
 }
 
 a:hover {
-    color: blue;
+    color: rgb(8, 8, 10);
+    font-weight: 700;
 }
 
 .subscribe {
     text-align: center;
     color: hsl(236, 9%, 61%);
+    font-weight: 500;
+    font-size: small;
 }
 
 .filter {
@@ -216,6 +235,11 @@ a:hover {
     color: hsl(234, 11%, 52%);
     color: hsl(233, 14%, 35%);
     color: hsl(237, 14%, 26%);
+}
+
+label.completed {
+    color: hsl(240, 15%, 46%);
+    text-decoration: line-through;
 }
 
 .active {
@@ -240,9 +264,42 @@ a:hover {
     display: none;
 }
 
+.dark-theme .list-block ul, .dark-theme .footer, .dark-theme .footer li, .dark-theme .add-field, .dark-theme form, .dark-theme input[type="submit"], .dark-theme .todo-list input[type="checkbox"], .dark-theme .todo-list label:before {
+    background-color: hsl(235, 24%, 19%);
+}
+
+.dark-theme input[type="submit"], .dark-theme .todo-list label:before {
+    border: 1px solid hsl(234, 11%, 52%);
+    color: hsl(235, 24%, 19%);
+}
+
+.dark-theme .list-block, .dark-theme .mobile-filters {
+    box-shadow: 0 0 20px rgb(0, 0, 0);
+}
+
 .pressButton {
-    color: rgb(25, 54, 187);
-    font-weight:700;
+    color: rgb(40, 77, 243);
+    font-weight: 700;
+}
+
+.dark-theme a:hover {
+    color: hsl(226, 95%, 61%);
+}
+
+.dark-theme .todo-list input[type="checkbox"]:checked+label:before {
+    color: hsl(0, 0%, 98%);
+}
+
+.dark-theme .active {
+    background-color: hsl(234, 43%, 21%);
+}
+
+.dark-theme .todo-list label {
+    color: hsl(231, 3%, 43%);
+}
+
+.dark-theme p, .dark-theme span {
+    color: hsl(231, 3%, 43%);
 }
 
 .mobile-filters {
@@ -250,4 +307,8 @@ a:hover {
     box-shadow: 0 0 20px gray;
     border-radius: 6px;
     padding: 15px;
+}
+
+.mobile .todo-app {
+    max-width: 340px;
 }
