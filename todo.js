@@ -41,14 +41,12 @@ const {
 } = globalThis;
 
 let todoList = new TodoList();
-// todoList.tasks = JSON.parse(localStorage.getItem("tasks"));
 
-// todoList.tasks.forEach(task => render(task));
-// setCounterTask();
 
 const renderTask = render();
 const size = document.documentElement.clientWidth < 376;
 const blockTodo = document.querySelector(".todo-list");
+
 
 let highlightButton = wrapperHighlightButton();
 
@@ -62,7 +60,6 @@ themeSwitch.addEventListener("click", changeTheme);
 
 function changeTheme() {
     document.body.classList.toggle("dark-theme");
-    console.log(document.body);
 }
 
 function wrapperHighlightButton() {
@@ -113,7 +110,6 @@ function removeTask(event) {
     todoList.removeById(li.id);
     li.remove();
     setCounterTask();
-    // localStorage.setItem("tasks", JSON.stringify(todoList.tasks));
 }
 
 function getItemsLeft() {
@@ -127,7 +123,6 @@ function clearAllCompleted() {
         document.getElementById(task.id).remove();
     });
     setCounterTask();
-    // localStorage.setItem("tasks", JSON.stringify(todoList.tasks));
 }
 
 function createTask() {
@@ -138,7 +133,6 @@ function createTask() {
     renderTask(task);
     input.value = "";
     setCounterTask();
-    // localStorage.setItem("tasks", JSON.stringify(todoList.tasks));
 }
 
 function setCounterTask() {
@@ -168,34 +162,25 @@ function render() {
 }
 
 function completeTask(event) {
-    if (event.target.tagName != "LABEL") return;
-    let li = event.target.closest("li");
-    let id = li.id;
-    todoList.switchState(id);
-    event.target.classList.toggle("completed");
-    let button = li.querySelector("img");
-    if (!size) button.hidden = !button.hidden;
-    highlight(currentFilterId);
-    setCounterTask();
+    
 }
 
 tasksList.addEventListener("mousedown", onMousedown);
 
 
 function onMousedown(event) {
+    if (event.target.tagName == "IMG") return;
     if (!event.target.closest("#tasksList")) return;
     let li = event.target.closest("li");
     let liClone = li.cloneNode(true);
 
     liClone.style.width = li.getBoundingClientRect().width + "px";
-    liClone.style.backgroundColor = "white";
     let shiftY = event.clientY - li.offsetTop;
 
     liClone.style.position = "absolute";
     liClone.style.zIndex = 1000;
     tasksList.append(liClone);
     liClone.style.top = li.offsetTop + "px";
-
 
     moveAt(event.pageY);
     function moveAt(pageY) {
@@ -219,23 +204,38 @@ function onMousedown(event) {
     }
 
     document.addEventListener("mousemove", onMouseMove);
-
+    document.addEventListener('mouseup',documentMousup);
+    function documentMousup(e){
+        e.target != liClone && liClone.remove();
+        document.removeEventListener("mouseup", documentMousup);
+    };
     liClone.addEventListener("mouseup", onMoseup);
-    function onMoseup() {
+    function onMoseup(e) {
         document.removeEventListener("mousemove", onMouseMove);
-        let correlationPasteLi = Math.floor(
-            (elemBelow.offsetTop + elemBelow.clientHeight - event.clientY) / 2
-        );
-        correlationPasteLi = Math.abs(correlationPasteLi);
-        
-        if (correlationPasteLi > elemBelow.clientHeight/2) elemBelow.before(li);
-        if (correlationPasteLi < elemBelow.clientHeight / 2) elemBelow.after(li);
-            liClone.removeEventListener("mouseup", onMoseup);
+        if (elemBelow ) {
+            let correlationPasteLi = Math.floor(
+                (elemBelow.offsetTop + elemBelow.clientHeight - event.clientY) /
+                    2
+            );
+            correlationPasteLi = Math.abs(correlationPasteLi);
+            correlationPasteLi > elemBelow.clientHeight / 2
+                ? elemBelow.before(li)
+                : elemBelow.after(li);
             liClone.remove();
+        } else {
+            liClone.remove();
+            if (event.target.tagName != "LABEL") return;
+            let id = li.id;
+            todoList.switchState(id);
+            event.target.classList.toggle("completed");
+            let button = li.querySelector("img");
+            if (!size) button.hidden = !button.hidden;
+            highlight(currentFilterId);
+            setCounterTask();
+        }
     }
+    
 }
-// event click on todo-list doesn`t work here. I understand why. But I don`t know how to fix this problem. 
-// I tryde to  call functions completeTask and removeTask inside onMousedown and after did return. But it didn`t work correct.
 
 tasksList.ondragstart = function () {
     return false;

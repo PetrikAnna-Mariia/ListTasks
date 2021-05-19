@@ -10,7 +10,6 @@
 
 body {
     background-color: hsl(0, 0%, 98%);
-    font-family: "Josefin Sans";
 }
 
 #wrapper {
@@ -94,7 +93,6 @@ input[type="submit"] {
     margin-right: 15px;
     font-size: 0;
     background-color: white;
-    transition: background-color .3s linear;
 }
 
 input[type="submit"]:hover {
@@ -106,9 +104,7 @@ input[type="text"] {
     font-family: 'Josefin Sans', sans-serif;
 }
 
-ul {
-    border-radius: 6px;
-}
+
 
 .add-field {
     width: calc(100% - 30px);
@@ -120,7 +116,12 @@ ul {
     border-radius: 6px;
 }
 
+.todo-list :first-child{
+    border-radius: 6px 6px 0 0;
+}
+
 .todo-list li {
+    background-color: white;
     display: flex;
     align-items: center;
     padding: 15px 20px;
@@ -135,6 +136,7 @@ ul {
     padding-left: 40px;
     transition: color .3s linear;
     cursor: pointer;
+    font-family: Josefin Sans;
 }
 
 .todo-list label:before {
@@ -228,18 +230,29 @@ label.completed {
     text-decoration: line-through;
 }
 
-.active {
-    background-color: rgb(246, 242, 255);
+label.completed:before {
+    background-image: linear-gradient(45deg, hsl(192, 100%, 67%), hsl(280, 87%, 65%));
+}
+
+.todo-list .active {
+    background-color: rgb(236, 229, 252);
 }
 
 .active label {
     color: rgb(98, 71, 252);
 }
 
+.active label:before{
+    background-color: rgb(236, 229, 252);
+    color: rgb(236, 229, 252);
+}
+
 .dark-theme {
     background-color: hsl(235, 21%, 11%);
     color: hsl(234, 39%, 85%);
 }
+
+
 
 .dark-theme .todo-section:before {
     background-image: url(bg-desktop-dark.jpg);
@@ -253,7 +266,13 @@ label.completed {
     display: none;
 }
 
-.dark-theme .list-block ul, .dark-theme .footer, .dark-theme .footer li, .dark-theme .add-field, .dark-theme form, .dark-theme input[type="submit"], .dark-theme .todo-list input[type="checkbox"], .dark-theme .todo-list label:before {
+.dark-theme .footer,
+.dark-theme .todo-list li, .dark-theme .footer li,
+.dark-theme .add-field,
+.dark-theme form,
+.dark-theme input[type="submit"],
+.dark-theme .todo-list input[type="checkbox"],
+.dark-theme .todo-list label:before {
     background-color: hsl(235, 24%, 19%);
 }
 
@@ -265,6 +284,7 @@ label.completed {
 .dark-theme .list-block, .dark-theme .mobile-filters {
     box-shadow: 0 0 20px rgb(0, 0, 0);
 }
+
 
 .pressButton {
     color: rgb(40, 77, 243);
@@ -279,13 +299,11 @@ label.completed {
     color: hsl(0, 0%, 98%);
 }
 
-.dark-theme .active {
+.dark-theme .todo-list .active {
     background-color: hsl(276, 51%, 26%);
 }
 
-.dark-theme .active label {
-    color: rgb(98, 71, 252);
-}
+
 
 .dark-theme .todo-list label:hover {
     color: rgb(140, 61, 231);
@@ -297,6 +315,15 @@ label.completed {
 
 .dark-theme .todo-list label {
     color: hsl(231, 3%, 43%);
+}
+
+.dark-theme .active label {
+    color: rgb(98, 71, 252);
+}
+.dark-theme .active label:before{
+    border-color: rgb(98, 71, 252);
+    background-color: hsl(276, 51%, 26%);
+    color: hsl(276, 51%, 26%);
 }
 
 .dark-theme p, .dark-theme span {
